@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>記事 ｜ おかやまCoAX</title>
+  <meta name="description" content="おかやまCoAX コラム・イベントレポート記事">
+  <!-- OGP / Twitter Card -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="おかやまCoAX">
+  <meta property="og:title" content="コラム・イベントレポート ｜ おかやまCoAX">
+  <meta property="og:description" content="おかやまCoAXのコラム・イベントレポート。AI活用のヒントをお届けします。">
+  <meta property="og:image" content="https://okayamacoax.re-birth-llc.co.jp/assets/img/ogp.png">
+  <meta property="og:url" content="https://okayamacoax.re-birth-llc.co.jp/columns.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="columns">
+  <header id="site-header"></header>
+
+  <main id="main">
+    <section class="section">
+      <div class="container">
+        <article class="article" id="article"><div class="loading">読み込み中…</div></article>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="container">
+        <h2>共に、次へ。</h2>
+        <p>あなたの現場での試行錯誤も、ぜひ聞かせてください。</p>
+        <a href="#" id="cta-line" class="btn btn--line" target="_blank" rel="noopener">LINEオープンチャットに参加する</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/column.js"></script>
+  <script>
+    CoAX.getConfig().then(cfg => {
+      const el = document.getElementById("cta-line");
+      if (el) el.href = cfg.lineFormUrl;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# OS / エディタの生成物
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+
+# Googleドキュメントのポインタ（設計書の.gdocスタブ。公開物には不要）
+*.gdoc
+
+# プロンプトの平文ソース（編集用・非公開）。公開するのは data/prompts/*.enc.json のみ
+prompts-source/

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プロンプト暗号化ツール ｜ おかやまCoAX（運営用）</title>
+  <style>
+    :root { --teal:#0d8b7d; --teal-d:#0a6f64; --gold:#f0a92e; --bg:#fdfcfa; --ink:#1f2d2b; --soft:#5f6b68; --bd:#eae5db; }
+    * { box-sizing: border-box; }
+    body { font-family: "Noto Sans JP", system-ui, sans-serif; background: var(--bg); color: var(--ink);
+      margin: 0; padding: 32px 16px; line-height: 1.7; }
+    .wrap { max-width: 760px; margin: 0 auto; }
+    h1 { font-size: 22px; margin: 0 0 4px; }
+    .sub { color: var(--soft); font-size: 14px; margin: 0 0 24px; }
+    .card { background: #fff; border: 1px solid var(--bd); border-radius: 16px; padding: 22px; margin-bottom: 18px;
+      box-shadow: 0 4px 18px rgba(20,70,64,.08); }
+    label { font-weight: 700; font-size: 14px; display: block; margin: 14px 0 6px; }
+    input[type=text], input[type=password], select, textarea {
+      width: 100%; padding: 10px 12px; border: 2px solid var(--bd); border-radius: 10px; font-size: 15px;
+      font-family: inherit; background: #fff; color: var(--ink); }
+    textarea { min-height: 180px; resize: vertical; font-family: "Consolas", monospace; font-size: 13px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--teal); }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .row > div { flex: 1; min-width: 200px; }
+    button { background: var(--teal); color: #fff; border: 0; border-radius: 999px; padding: 11px 22px;
+      font-weight: 700; font-family: inherit; font-size: 15px; cursor: pointer; }
+    button:hover { background: var(--teal-d); }
+    button.ghost { background: #fff; color: var(--teal-d); border: 2px solid var(--teal); }
+    .tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+    .tabs button { background: #fff; color: var(--soft); border: 2px solid var(--bd); }
+    .tabs button.active { background: var(--teal); color: #fff; border-color: var(--teal); }
+    .msg { font-size: 14px; margin-top: 10px; min-height: 1.2em; }
+    .msg.ok { color: var(--teal-d); font-weight: 700; }
+    .msg.err { color: #c0392b; font-weight: 700; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+    ol { padding-left: 20px; }
+    code { background: #f2efe9; padding: 1px 6px; border-radius: 5px; font-size: 13px; }
+    .note { background: #fff8e8; border: 1px solid #f0d98a; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #7a5d12; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>🔒 プロンプト暗号化ツール（運営用）</h1>
+    <p class="sub">おかやまCoAX ｜ このツールはブラウザ内だけで処理します。合言葉やプロンプトが外部に送信されることはありません。</p>
+
+    <div class="note">
+      <strong>使い方</strong>
+      <ol style="margin:8px 0 0">
+        <li>プロンプトの原稿（配列JSON）は <code>prompts-source/</code> フォルダで編集します。</li>
+        <li>下の「暗号化」で、合言葉とカテゴリを指定し、原稿JSONを貼り付け → 「暗号化してダウンロード」。</li>
+        <li>できた <code>◯◯.enc.json</code> を <code>data/prompts/</code> に置いて、GitHubへ反映（コミット/プッシュ）します。</li>
+        <li>合言葉を変えるときは、5カテゴリすべてを新しい合言葉で暗号化し直してください。</li>
+      </ol>
+    </div>
+
+    <div class="tabs">
+      <button id="tab-enc" class="active" onclick="setMode('enc')">暗号化する</button>
+      <button id="tab-dec" onclick="setMode('dec')">復号して確認する</button>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <label for="pass">合言葉</label>
+          <input type="password" id="pass" autocomplete="off" placeholder="合言葉を入力">
+        </div>
+        <div>
+          <label for="cat">カテゴリ（出力ファイル名）</label>
+          <select id="cat">
+            <option value="management">management（マネジメント）</option>
+            <option value="documents">documents（書類作成）</option>
+            <option value="sales">sales（営業・マーケティング）</option>
+            <option value="analysis">analysis（経営判断・分析）</option>
+            <option value="hr">hr（採用・人事）</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="input" id="input-label">原稿JSON（プロンプトの配列）を貼り付け</label>
+      <textarea id="input" placeholder='[ { "id": "mng-001", "title": "…", "description": "…", "body": "…" } ]'></textarea>
+
+      <div class="actions">
+        <button id="go" onclick="run()">暗号化してダウンロード</button>
+        <button class="ghost" onclick="copyOut()">結果をコピー</button>
+      </div>
+      <p class="msg" id="msg"></p>
+
+      <label for="output" style="margin-top:6px">結果</label>
+      <textarea id="output" readonly placeholder="ここに結果が表示されます"></textarea>
+    </div>
+  </div>
+
+  <script src="../assets/js/crypto.js"></script>
+  <script>
+    let mode = "enc";
+    function setMode(m) {
+      mode = m;
+      document.getElementById("tab-enc").classList.toggle("active", m === "enc");
+      document.getElementById("tab-dec").classList.toggle("active", m === "dec");
+      document.getElementById("go").textContent = m === "enc" ? "暗号化してダウンロード" : "復号する";
+      document.getElementById("input-label").textContent = m === "enc"
+        ? "原稿JSON（プロンプトの配列）を貼り付け"
+        : "暗号化ファイル（◯◯.enc.json の中身）を貼り付け";
+      document.getElementById("msg").textContent = "";
+      document.getElementById("output").value = "";
+    }
+
+    function setMsg(text, cls) {
+      const el = document.getElementById("msg");
+      el.textContent = text; el.className = "msg " + (cls || "");
+    }
+
+    async function run() {
+      const pass = document.getElementById("pass").value;
+      const input = document.getElementById("input").value.trim();
+      if (!pass) return setMsg("合言葉を入力してください。", "err");
+      if (!input) return setMsg("JSONを貼り付けてください。", "err");
+
+      try {
+        if (mode === "enc") {
+          // 妥当なJSONか確認してから暗号化（整形して保存）
+          const parsed = JSON.parse(input);
+          const text = JSON.stringify(parsed);
+          const obj = await CoAXCrypto.encrypt(text, pass);
+          const out = JSON.stringify(obj, null, 2);
+          document.getElementById("output").value = out;
+          const name = document.getElementById("cat").value + ".enc.json";
+          download(name, out);
+          setMsg(`暗号化しました（${parsed.length ?? "?"}件）。${name} をダウンロードしました。`, "ok");
+        } else {
+          const obj = JSON.parse(input);
+          const text = await CoAXCrypto.decrypt(obj, pass);
+          const parsed = JSON.parse(text);
+          document.getElementById("output").value = JSON.stringify(parsed, null, 2);
+          setMsg(`復号しました（${parsed.length ?? "?"}件）。合言葉は正しいです。`, "ok");
+        }
+      } catch (e) {
+        if (mode === "dec") setMsg("復号できませんでした。合言葉が違うか、ファイルが正しくありません。", "err");
+        else setMsg("エラー：JSONの形式を確認してください（" + e.message + "）", "err");
+      }
+    }
+
+    function download(filename, text) {
+      const blob = new Blob([text], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+
+    function copyOut() {
+      const out = document.getElementById("output");
+      if (!out.value) return;
+      navigator.clipboard.writeText(out.value).then(() => setMsg("結果をコピーしました。", "ok"));
+    }
+  </script>
+</body>
+</html>

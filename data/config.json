@@ -1,0 +1,14 @@
+{
+  "siteName": "おかやまCoAX",
+  "concept": "共に、次へ",
+  "tagline": "岡山の管理者・経営者のための、無料AI活用実践コミュニティ",
+  "operator": "合同会社リバース",
+  "lineFormUrl": "https://forms.gle/REPLACE_WITH_YOUR_GOOGLE_FORM_ID",
+  "categories": [
+    { "id": "management", "name": "マネジメント", "scene": "部下育成・評価・1on1", "icon": "person", "status": "available" },
+    { "id": "documents",  "name": "書類作成",     "scene": "社内文書・議事録・稟議", "icon": "document", "status": "available" },
+    { "id": "sales",      "name": "営業・マーケティング", "scene": "提案書・広告文・SNS投稿", "icon": "megaphone", "status": "available" },
+    { "id": "analysis",   "name": "経営判断・分析", "scene": "SWOT分析・数字整理・競合比較", "icon": "chart", "status": "available" },
+    { "id": "hr",         "name": "採用・人事",   "scene": "求人票・面接・評価制度", "icon": "people", "status": "available" }
+  ]
+}

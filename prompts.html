@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プロンプトライブラリ ｜ おかやまCoAX</title>
+  <meta name="description" content="マネジメント・書類作成・営業マーケ・経営分析・採用人事。シーン別に選べる、コピペで使えるプロンプト集。">
+  <!-- OGP / Twitter Card -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="おかやまCoAX">
+  <meta property="og:title" content="プロンプトライブラリ ｜ おかやまCoAX">
+  <meta property="og:description" content="マネジメント・書類作成・営業マーケ・経営分析・採用人事。シーン別に選べる、コピペで使えるプロンプト集。">
+  <meta property="og:image" content="https://okayamacoax.re-birth-llc.co.jp/assets/img/ogp.png">
+  <meta property="og:url" content="https://okayamacoax.re-birth-llc.co.jp/prompts.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="prompts">
+  <header id="site-header"></header>
+
+  <main id="main">
+    <section class="section">
+      <div class="container">
+        <p class="crumbs"><a href="index.html">トップ</a> ／ プロンプト集</p>
+        <div class="section__head">
+          <p class="eyebrow">PROMPT LIBRARY</p>
+          <h1 class="section__title">プロンプト<span class="em">ライブラリ</span></h1>
+          <p class="section__lead">使いたいシーンのカテゴリを選んでください。中の一覧から、そのままコピーして使えます。</p>
+        </div>
+        <div class="grid grid--3" id="categories"><div class="loading">読み込み中…</div></div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="container">
+        <h2>「こんなプロンプトが欲しい」も歓迎です。</h2>
+        <p>LINEオープンチャットで、実際に使ってみた感想や要望をお寄せください。</p>
+        <a href="#" id="cta-line" class="btn btn--line" target="_blank" rel="noopener">LINEオープンチャットに参加する</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/prompts.js"></script>
+  <script>
+    CoAX.getConfig().then(cfg => {
+      const el = document.getElementById("cta-line");
+      if (el) el.href = cfg.lineFormUrl;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>おかやまCoAX ｜ 岡山の管理者・経営者のためのAI活用実践コミュニティ</title>
+  <meta name="description" content="おかやまCoAXは、岡山の管理者・経営者向けの無料AI活用実践コミュニティ。コピペで使えるプロンプト集と、実際の活用事例・イベントレポートを蓄積しています。">
+  <!-- OGP / Twitter Card -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="おかやまCoAX">
+  <meta property="og:title" content="おかやまCoAX ｜ 岡山の管理者・経営者のためのAI活用実践コミュニティ">
+  <meta property="og:description" content="「共に、次へ」。コピペで使えるプロンプト集と、リアルな活用事例。気負わず・気軽にAIを実務で試せる無料コミュニティ。">
+  <meta property="og:image" content="https://okayamacoax.re-birth-llc.co.jp/assets/img/ogp.png">
+  <meta property="og:url" content="https://okayamacoax.re-birth-llc.co.jp/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="home">
+  <header id="site-header"></header>
+
+  <main id="main">
+    <!-- ヒーロー -->
+    <section class="hero">
+      <span class="hero__blob hero__blob--1"></span>
+      <span class="hero__blob hero__blob--2"></span>
+      <div class="hero__inner">
+        <p class="eyebrow">岡山の管理者・経営者のためのAI活用実践コミュニティ</p>
+        <h1 class="hero__concept">共に、<span class="em">次へ</span>。</h1>
+        <p class="hero__lead">「AIを実務でどう使うか」を、気負わず・気軽に試せる場所。<br>コピペで使えるプロンプト集と、リアルな活用事例をここに。</p>
+        <div class="hero__actions">
+          <a href="#" id="hero-line" class="btn btn--line" target="_blank" rel="noopener">LINEで参加する（無料）</a>
+          <a href="prompts.html" class="btn btn--ghost">プロンプト集を見る</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 次回開催予定 -->
+    <section class="section">
+      <div class="container">
+        <div class="section__head">
+          <p class="eyebrow">SCHEDULE</p>
+          <h2 class="section__title">次回の<span class="em">開催予定</span></h2>
+          <p class="section__lead">オンライン・オフラインで、実際に手を動かす会を開いています。</p>
+        </div>
+        <div class="events" id="events"><div class="loading">読み込み中…</div></div>
+      </div>
+    </section>
+
+    <!-- プロンプトライブラリ導線 -->
+    <section class="section section--soft">
+      <div class="container">
+        <div class="section__head">
+          <p class="eyebrow">PROMPT LIBRARY</p>
+          <h2 class="section__title">コピペで使える<span class="em">プロンプト集</span></h2>
+          <p class="section__lead">シーンから選んで、そのまま貼り付けるだけ。まずは覗いてみてください。</p>
+        </div>
+        <div class="grid grid--3" id="categories"><div class="loading">読み込み中…</div></div>
+        <div style="text-align:center; margin-top:28px">
+          <a href="prompts.html" class="btn btn--ghost">すべてのカテゴリを見る</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 最新コラム -->
+    <section class="section">
+      <div class="container">
+        <div class="section__head">
+          <p class="eyebrow">COLUMN &amp; REPORT</p>
+          <h2 class="section__title">最新の<span class="em">コラム</span>・イベントレポート</h2>
+          <p class="section__lead">AI活用のヒントと、コミュニティの活動記録。</p>
+        </div>
+        <div class="grid grid--3" id="latest-columns"><div class="loading">読み込み中…</div></div>
+        <div style="text-align:center; margin-top:28px">
+          <a href="columns.html" class="btn btn--ghost">記事一覧を見る</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- LINE CTA -->
+    <section class="cta-band">
+      <div class="container">
+        <h2>まずは、覗いてみるだけでOK。</h2>
+        <p>ニックネームでの参加も可能です。お気軽にどうぞ。</p>
+        <a href="#" id="cta-line" class="btn btn--line" target="_blank" rel="noopener">LINEオープンチャットに参加する</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/home.js"></script>
+  <script>
+    // ヒーロー/CTAのLINEボタンにフォームURLを反映
+    CoAX.getConfig().then(cfg => {
+      ["hero-line", "cta-line"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.href = cfg.lineFormUrl;
+      });
+    });
+  </script>
+</body>
+</html>
