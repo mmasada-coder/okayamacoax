@@ -3,7 +3,7 @@
   "concept": "共に、次へ",
   "tagline": "岡山の管理者・経営者のための、無料AI活用実践コミュニティ",
   "operator": "合同会社リバース",
-  "lineFormUrl": "https://forms.gle/REPLACE_WITH_YOUR_GOOGLE_FORM_ID",
+  "lineFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSfqNFQC-V_D9KfUzR8PNmdY_4c4y_vm0Nd0nuSRYS8stPffIA/viewform",
   "categories": [
     { "id": "management", "name": "マネジメント", "scene": "部下育成・評価・1on1", "icon": "person", "status": "available" },
     { "id": "documents",  "name": "書類作成",     "scene": "社内文書・議事録・稟議", "icon": "document", "status": "available" },
