@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>管理画面 ｜ おかやまCoAX（運営用）</title>
+  <style>
+    :root{--teal:#0d8b7d;--teal-d:#0a6f64;--gold:#f0a92e;--bg:#f4f6f5;--surface:#fff;--ink:#1f2d2b;--soft:#5f6b68;--bd:#e3e0d7;--danger:#c0392b;}
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;}
+    header{background:var(--surface);border-bottom:1px solid var(--bd);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+    .brand{font-weight:700;font-size:18px;}
+    .brand small{color:var(--soft);font-weight:400;font-size:12px;display:block;}
+    .wrap{max-width:960px;margin:0 auto;padding:20px;}
+    .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0 20px;}
+    .tabs button{background:#fff;border:2px solid var(--bd);color:var(--soft);border-radius:999px;padding:8px 16px;font-weight:700;font-family:inherit;cursor:pointer;font-size:14px;}
+    .tabs button.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+    .panel{display:none;}
+    .panel.active{display:block;}
+    .card{background:var(--surface);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 3px 12px rgba(20,70,64,.06);}
+    label{font-weight:700;font-size:13px;display:block;margin:10px 0 4px;color:var(--soft);}
+    input[type=text],input[type=date],input[type=datetime-local],select,textarea{width:100%;padding:9px 12px;border:2px solid var(--bd);border-radius:10px;font-size:15px;font-family:inherit;background:#fff;color:var(--ink);}
+    textarea{min-height:120px;resize:vertical;}
+    textarea.body{min-height:180px;font-family:"Consolas",monospace;font-size:13px;}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);}
+    .row{display:flex;gap:12px;flex-wrap:wrap;}
+    .row>div{flex:1;min-width:180px;}
+    button{font-family:inherit;cursor:pointer;}
+    .btn{background:var(--teal);color:#fff;border:0;border-radius:999px;padding:10px 20px;font-weight:700;font-size:15px;}
+    .btn:hover{background:var(--teal-d);}
+    .btn.ghost{background:#fff;color:var(--teal-d);border:2px solid var(--teal);}
+    .btn.gold{background:var(--gold);color:#3a2d0a;}
+    .btn.sm{padding:6px 12px;font-size:13px;}
+    .btn.del{background:#fff;color:var(--danger);border:2px solid #eab;}
+    .cardhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;}
+    .cardhead .t{font-weight:700;font-size:14px;color:var(--soft);}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0 18px;padding:14px;background:#fff;border:1px dashed var(--teal);border-radius:12px;}
+    .hint{font-size:13px;color:var(--soft);}
+    .gate{max-width:420px;margin:60px auto;text-align:center;background:#fff;border:1px solid var(--bd);border-radius:16px;padding:36px 26px;box-shadow:0 6px 20px rgba(20,70,64,.1);}
+    .gate h2{margin:0 0 8px;}
+    .gate input{margin:14px 0;}
+    .err{color:var(--danger);font-weight:700;font-size:14px;min-height:1.2em;}
+    .ok{color:var(--teal-d);font-weight:700;}
+    .steps{background:#fff8e8;border:1px solid #f0d98a;border-radius:12px;padding:14px 18px;font-size:14px;color:#6b530f;margin-bottom:18px;}
+    .steps b{color:#3a2d0a;}
+    code{background:#eef1f0;padding:1px 6px;border-radius:5px;font-size:13px;}
+    .muted{color:var(--soft);font-size:12px;}
+    a{color:var(--teal-d);}
+  </style>
+</head>
+<body>
+  <div id="gate" class="gate">
+    <div style="font-size:38px">🔧</div>
+    <h2>おかやまCoAX 管理画面</h2>
+    <p class="hint">運営用です。合言葉を入力してください。</p>
+    <form id="gate-form">
+      <input type="password" id="gate-input" placeholder="合言葉" autocomplete="off" style="text-align:center">
+      <div><button class="btn" type="submit">開く</button></div>
+    </form>
+    <p class="err" id="gate-err"></p>
+  </div>
+
+  <div id="app" style="display:none">
+    <header>
+      <div class="brand">🔧 おかやまCoAX 管理画面 <small>編集 → 書き出し → GitHubに反映</small></div>
+      <a href="index.html" class="hint">サイトを見る →</a>
+    </header>
+    <div class="wrap">
+      <div class="steps">
+        <b>使い方</b>：各タブで編集 → 一番下の「<b>◯◯を書き出す</b>」でファイルをダウンロード →
+        GitHubのリポジトリで同じ場所に<b>差し替え（アップロード）してコミット</b>すれば、1〜2分で公開反映されます。
+        <span class="muted">（プロンプトは書き出し時に自動で暗号化されます）</span>
+      </div>
+
+      <div class="tabs">
+        <button data-tab="columns" class="active" onclick="showTab('columns')">コラム</button>
+        <button data-tab="events" onclick="showTab('events')">開催予定</button>
+        <button data-tab="prompts" onclick="showTab('prompts')">プロンプト</button>
+        <button data-tab="config" onclick="showTab('config')">サイト設定</button>
+      </div>
+
+      <div id="panel-columns" class="panel active"></div>
+      <div id="panel-events" class="panel"></div>
+      <div id="panel-prompts" class="panel"></div>
+      <div id="panel-config" class="panel"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/crypto.js"></script>
+  <script>
+  const state = { pass:"", config:null, events:[], columns:[], prompts:{} };
+  const CATS = ["management","documents","sales","analysis","hr"];
+  const esc = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+  async function loadJSON(p){ const r = await fetch(p+"?t="+Date.now()); if(!r.ok) throw new Error(p); return r.json(); }
+
+  /* ---------- 合言葉ゲート ---------- */
+  document.getElementById("gate-form").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const pass = document.getElementById("gate-input").value.trim();
+    const err = document.getElementById("gate-err");
+    if(!pass) return;
+    err.textContent = "確認中…";
+    try {
+      // 合言葉の検証＝プロンプト1件を復号できるか
+      const enc = await loadJSON("data/prompts/management.enc.json");
+      const text = await CoAXCrypto.decrypt(enc, pass);
+      state.prompts.management = JSON.parse(text);
+      state.pass = pass;
+      err.textContent = "";
+      await bootstrap();
+      document.getElementById("gate").style.display="none";
+      document.getElementById("app").style.display="block";
+    } catch(ex){
+      err.textContent = "合言葉が正しくないか、暗号機能が使えません（https:// か localhost で開いてください）。";
+    }
+  });
+
+  async function bootstrap(){
+    state.config  = await loadJSON("data/config.json");
+    state.events  = await loadJSON("data/events.json");
+    state.columns = await loadJSON("data/columns.json");
+    for(const c of CATS){
+      if(state.prompts[c]) continue;
+      const enc = await loadJSON(`data/prompts/${c}.enc.json`);
+      state.prompts[c] = JSON.parse(await CoAXCrypto.decrypt(enc, state.pass));
+    }
+    renderColumns(); renderEvents(); renderPrompts(); renderConfig();
+  }
+
+  function showTab(t){
+    document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active", b.dataset.tab===t));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+    document.getElementById("panel-"+t).classList.add("active");
+  }
+
+  function download(name, text){
+    const blob = new Blob([text], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }
+
+  /* ========== コラム ========== */
+  function colBodyToText(body){
+    if(typeof body==="string") return body;
+    if(Array.isArray(body)) return body.map(b=> b.type==="h2" ? "## "+b.text : b.text).join("\n\n");
+    return "";
+  }
+  function colTextToBody(text){
+    return text.split(/\n{2,}/).map(chunk=>{
+      const t = chunk.replace(/\s+$/,"");
+      if(t.startsWith("## ")) return {type:"h2", text:t.slice(3).trim()};
+      return {type:"p", text:t};
+    }).filter(b=>b.text!=="");
+  }
+  function nextColId(){
+    let max=0; state.columns.forEach(c=>{ const m=/col-(\d+)/.exec(c.id||""); if(m) max=Math.max(max,+m[1]); });
+    return "col-"+String(max+1).padStart(3,"0");
+  }
+  function renderColumns(){
+    const p = document.getElementById("panel-columns");
+    const items = state.columns.map((c,i)=>colCard(c,i)).join("");
+    p.innerHTML = `<div class="toolbar">
+        <button class="btn ghost sm" onclick="addColumn()">＋ コラムを追加</button>
+        <span class="hint">新着順は日付で自動並び替えされます。</span>
+      </div>${items}
+      <div class="toolbar"><button class="btn gold" onclick="exportColumns()">columns.json を書き出す</button>
+        <span class="hint">→ <code>data/columns.json</code> に差し替え</span></div>`;
+  }
+  function colCard(c,i){
+    return `<div class="card" data-idx="${i}">
+      <div class="cardhead"><span class="t">記事 #${i+1}（id: ${esc(c.id)}）</span>
+        <button class="btn del sm" onclick="delItem('columns',${i})">削除</button></div>
+      <div class="row">
+        <div><label>タイトル</label><input type="text" data-f="title" value="${esc(c.title)}"></div>
+        <div style="max-width:170px"><label>日付</label><input type="date" data-f="date" value="${esc((c.date||'').slice(0,10))}"></div>
+        <div style="max-width:190px"><label>区分</label><input type="text" data-f="category" value="${esc(c.category||'コラム')}"></div>
+      </div>
+      <label>抜粋（一覧に出る2〜3行）</label><textarea data-f="excerpt">${esc(c.excerpt||"")}</textarea>
+      <label>本文（段落は空行で区切る／見出しは行頭に <code>## </code>）</label>
+      <textarea class="body" data-f="body">${esc(colBodyToText(c.body))}</textarea>
+      <input type="hidden" data-f="id" value="${esc(c.id)}">
+    </div>`;
+  }
+  function collectColumns(){
+    return [...document.querySelectorAll("#panel-columns .card")].map(card=>{
+      const g=f=>card.querySelector(`[data-f="${f}"]`).value;
+      return { id:g("id"), title:g("title").trim(), date:g("date"), category:g("category").trim()||"コラム",
+        excerpt:g("excerpt").trim(), body:colTextToBody(g("body")) };
+    });
+  }
+  function addColumn(){
+    const today=new Date().toISOString().slice(0,10);
+    state.columns = collectColumns();
+    state.columns.unshift({id:nextColId(),title:"",date:today,category:"コラム",excerpt:"",body:[]});
+    renderColumns();
+  }
+  function exportColumns(){
+    const arr = collectColumns().sort((a,b)=> new Date(b.date)-new Date(a.date));
+    download("columns.json", JSON.stringify(arr,null,2));
+  }
+
+  /* ========== 開催予定 ========== */
+  function nextEvtId(date){ return "evt-"+(date? date.slice(0,10) : new Date().toISOString().slice(0,10)); }
+  function renderEvents(){
+    const p=document.getElementById("panel-events");
+    const items=state.events.map((e,i)=>evtCard(e,i)).join("");
+    p.innerHTML=`<div class="toolbar"><button class="btn ghost sm" onclick="addEvent()">＋ 予定を追加</button>
+      <span class="hint">過ぎた予定はトップページから自動で消えます。</span></div>${items}
+      <div class="toolbar"><button class="btn gold" onclick="exportEvents()">events.json を書き出す</button>
+      <span class="hint">→ <code>data/events.json</code> に差し替え</span></div>`;
+  }
+  function evtCard(e,i){
+    const dt=(e.date||"").replace(/(\+|-)\d\d:\d\d$/,"").slice(0,16);
+    return `<div class="card" data-idx="${i}">
+      <div class="cardhead"><span class="t">予定 #${i+1}</span>
+        <button class="btn del sm" onclick="delItem('events',${i})">削除</button></div>
+      <label>タイトル</label><input type="text" data-f="title" value="${esc(e.title)}">
+      <div class="row">
+        <div><label>日時</label><input type="datetime-local" data-f="date" value="${esc(dt)}"></div>
+        <div style="max-width:200px"><label>種別</label>
+          <select data-f="type"><option ${e.type==='オンライン'?'selected':''}>オンライン</option><option ${e.type==='オフライン'?'selected':''}>オフライン</option></select></div>
+      </div>
+      <label>補足メモ（任意）</label><input type="text" data-f="note" value="${esc(e.note||'')}">
+      <input type="hidden" data-f="id" value="${esc(e.id||'')}">
+    </div>`;
+  }
+  function collectEvents(){
+    return [...document.querySelectorAll("#panel-events .card")].map(card=>{
+      const g=f=>card.querySelector(`[data-f="${f}"]`).value;
+      let d=g("date"); if(d && d.length===16) d=d+":00+09:00";
+      return { id:g("id")||nextEvtId(d), title:g("title").trim(), date:d, type:g("type"), note:g("note").trim() };
+    });
+  }
+  function addEvent(){ state.events=collectEvents(); state.events.push({id:"",title:"",date:"",type:"オンライン",note:""}); renderEvents(); }
+  function exportEvents(){
+    const arr=collectEvents().sort((a,b)=>new Date(a.date)-new Date(b.date));
+    download("events.json", JSON.stringify(arr,null,2));
+  }
+
+  /* ========== プロンプト ========== */
+  let curCat = "management";
+  function catName(id){ const c=state.config.categories.find(x=>x.id===id); return c?c.name:id; }
+  function nextPromptId(cat){
+    const pre={management:"mgmt",documents:"doc",sales:"sales",analysis:"analysis",hr:"hr"}[cat]||cat;
+    let max=0; (state.prompts[cat]||[]).forEach(p=>{ const m=new RegExp(pre+"-(\\d+)").exec(p.id||""); if(m) max=Math.max(max,+m[1]); });
+    return pre+"-"+String(max+1).padStart(2,"0");
+  }
+  function renderPrompts(){
+    const p=document.getElementById("panel-prompts");
+    const opts=CATS.map(c=>`<option value="${c}" ${c===curCat?'selected':''}>${esc(catName(c))}</option>`).join("");
+    const items=(state.prompts[curCat]||[]).map((pr,i)=>promptCard(pr,i)).join("");
+    p.innerHTML=`<div class="toolbar">
+        <label style="margin:0">カテゴリ</label>
+        <select id="cat-sel" onchange="switchCat(this.value)" style="max-width:240px">${opts}</select>
+        <button class="btn ghost sm" onclick="addPrompt()">＋ プロンプトを追加</button>
+      </div>${items||'<p class="hint">このカテゴリはまだプロンプトがありません。</p>'}
+      <div class="toolbar"><button class="btn gold" onclick="exportPrompts()">${esc(curCat)}.enc.json を書き出す（暗号化）</button>
+        <span class="hint">→ <code>data/prompts/${esc(curCat)}.enc.json</code> に差し替え</span></div>`;
+  }
+  function promptCard(pr,i){
+    return `<div class="card" data-idx="${i}">
+      <div class="cardhead"><span class="t">#${i+1}（id: ${esc(pr.id)}）</span>
+        <button class="btn del sm" onclick="delItem('prompts',${i})">削除</button></div>
+      <label>タイトル</label><input type="text" data-f="title" value="${esc(pr.title)}">
+      <label>説明（任意）</label><input type="text" data-f="description" value="${esc(pr.description||'')}">
+      <label>本文（コピーされる内容。改行そのままでOK）</label>
+      <textarea class="body" data-f="body">${esc(pr.body||"")}</textarea>
+      <input type="hidden" data-f="id" value="${esc(pr.id)}">
+    </div>`;
+  }
+  function collectPrompts(){
+    return [...document.querySelectorAll("#panel-prompts .card")].map(card=>{
+      const g=f=>card.querySelector(`[data-f="${f}"]`).value;
+      return { id:g("id"), title:g("title").trim(), description:g("description").trim(), body:g("body") };
+    });
+  }
+  function switchCat(c){ state.prompts[curCat]=collectPrompts(); curCat=c; renderPrompts(); }
+  function addPrompt(){
+    state.prompts[curCat]=collectPrompts();
+    (state.prompts[curCat]=state.prompts[curCat]||[]).push({id:nextPromptId(curCat),title:"",description:"",body:""});
+    renderPrompts();
+  }
+  async function exportPrompts(){
+    const arr=collectPrompts();
+    state.prompts[curCat]=arr;
+    const obj=await CoAXCrypto.encrypt(JSON.stringify(arr), state.pass);
+    download(curCat+".enc.json", JSON.stringify(obj,null,2));
+  }
+
+  /* ========== サイト設定 ========== */
+  function renderConfig(){
+    const p=document.getElementById("panel-config");
+    const cats=state.config.categories.map((c,i)=>`
+      <div class="card">
+        <div class="cardhead"><span class="t">${esc(c.name)}（${esc(c.id)}）</span></div>
+        <div class="row">
+          <div><label>表示名</label><input type="text" data-cf="name" data-i="${i}" value="${esc(c.name)}"></div>
+          <div><label>想定シーン</label><input type="text" data-cf="scene" data-i="${i}" value="${esc(c.scene)}"></div>
+          <div style="max-width:200px"><label>公開状態</label>
+            <select data-cf="status" data-i="${i}"><option value="available" ${c.status==='available'?'selected':''}>公開中</option><option value="coming" ${c.status==='coming'?'selected':''}>準備中</option></select></div>
+        </div>
+      </div>`).join("");
+    p.innerHTML=`
+      <div class="card">
+        <label>参加フォームURL（LINEで参加ボタンの遷移先）</label>
+        <input type="text" id="cfg-form" value="${esc(state.config.lineFormUrl)}">
+        <div class="row" style="margin-top:10px">
+          <div><label>サイト名</label><input type="text" id="cfg-name" value="${esc(state.config.siteName)}"></div>
+          <div><label>コンセプト</label><input type="text" id="cfg-concept" value="${esc(state.config.concept)}"></div>
+        </div>
+        <label>タグライン</label><input type="text" id="cfg-tag" value="${esc(state.config.tagline||'')}">
+      </div>
+      <h3 style="margin:18px 0 8px">カテゴリ</h3>${cats}
+      <div class="toolbar"><button class="btn gold" onclick="exportConfig()">config.json を書き出す</button>
+        <span class="hint">→ <code>data/config.json</code> に差し替え</span></div>`;
+  }
+  function exportConfig(){
+    const cfg=JSON.parse(JSON.stringify(state.config));
+    cfg.lineFormUrl=document.getElementById("cfg-form").value.trim();
+    cfg.siteName=document.getElementById("cfg-name").value.trim();
+    cfg.concept=document.getElementById("cfg-concept").value.trim();
+    cfg.tagline=document.getElementById("cfg-tag").value.trim();
+    document.querySelectorAll("[data-cf]").forEach(el=>{
+      cfg.categories[+el.dataset.i][el.dataset.cf]=el.value;
+    });
+    state.config=cfg;
+    download("config.json", JSON.stringify(cfg,null,2));
+  }
+
+  /* ========== 共通：削除 ========== */
+  function delItem(kind,i){
+    if(!confirm("削除しますか？（書き出すまでファイルには反映されません）")) return;
+    if(kind==="columns"){ state.columns=collectColumns(); state.columns.splice(i,1); renderColumns(); }
+    if(kind==="events"){ state.events=collectEvents(); state.events.splice(i,1); renderEvents(); }
+    if(kind==="prompts"){ state.prompts[curCat]=collectPrompts(); state.prompts[curCat].splice(i,1); renderPrompts(); }
+  }
+  </script>
+</body>
+</html>
