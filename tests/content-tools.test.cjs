@@ -91,3 +91,34 @@ test("load failures show retry guidance, never empty or not-found states", async
   vm.runInContext(fs.readFileSync(path.join(__dirname,"../assets/js/column.js"),"utf8"),ctx);
   await ctx.window.pageInit({siteName:"おかやまCoAX"}); assert.match(nodes.article.innerHTML,/読み込めません/);
 });
+
+test("report images require local paths and descriptions", () => {
+  const figure={src:"assets/img/reports/mokumoku.png",alt:"画像の内容",caption:"活動記録"};
+  assert.equal(tools.validFigure(figure),true);
+  for (const src of ["https://outside.test/image.png","javascript:alert(1)","assets/img/reports/../secret.png","assets/img/reports/a.png?x=1"]) assert.equal(tools.validFigure({...figure,src}),false);
+  assert.equal(tools.validFigure({...figure,alt:""}),false);
+  assert.ok(tools.validateData([{...columns[0],figure:{...figure,src:"invalid"}}],[event]).length);
+});
+test("report images escape captions and offer enlargement", () => {
+  const {ctx}=context();
+  vm.runInContext(fs.readFileSync(path.join(__dirname,"../assets/js/column.js"),"utf8"),ctx);
+  const figure={src:"assets/img/reports/mokumoku.png",alt:'"<tag>',caption:"<script>bad</script>"};
+  const html=ctx.renderFigure(figure);
+  assert.match(html,/width:100%;height:auto/);
+  assert.match(html,/画像を拡大して読む/);
+  assert.match(html,/&lt;script&gt;/);
+  assert.doesNotMatch(html,/<script>/);
+  assert.equal(ctx.renderFigure(undefined),"");
+  assert.equal(ctx.renderFigure({...figure,src:"javascript:alert(1)"}),"");
+});
+test("legacy editor preserves report images in text edits", () => {
+  const source=fs.readFileSync(path.join(__dirname,"../admin.html"),"utf8");
+  const code=source.match(/function collectColumns\(\)\{([\s\S]*?)\n  \}/)[1];
+  const figure={src:"assets/img/reports/mokumoku.png",alt:"説明",caption:"記録"};
+  const values={id:"col-001",title:"編集後",date:"2026-10-04",category:"イベントレポート",excerpt:"抜粋",body:"本文"};
+  const card={querySelector:selector=>({value:values[selector.match(/data-f="([^"]+)"/)[1]]})};
+  const fn=new Function("document","state","colTextToBody",code);
+  const result=fn({querySelectorAll:()=>[card]},{columns:[{id:"col-001",figure}]},s=>[{type:"p",text:s}]);
+  assert.equal(result[0].title,"編集後");
+  assert.deepEqual(result[0].figure,figure);
+});

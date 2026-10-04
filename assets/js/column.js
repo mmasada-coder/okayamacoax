@@ -27,7 +27,7 @@ window.pageInit = async function (config) {
       <h1 class="article__title">${CoAX.escapeHTML(article.title)}</h1>
       <p class="article__date">${CoAX.formatDate(article.date)}</p>
     </div>
-    <div class="article__body">${bodyHTML}</div>
+    <div class="article__body">${bodyHTML}${renderFigure(article.figure)}</div>
     <a class="back-link" href="columns.html">← コラム一覧に戻る</a>`;
 };
 
@@ -44,4 +44,20 @@ function renderBody(body) {
     }).join("");
   }
   return "";
+}
+
+/* Report images use validated local paths. */
+function renderFigure(figure) {
+  if (!CoAXContent.validFigure(figure)) return "";
+  const src = CoAX.escapeHTML(figure.src);
+  return `
+    <figure class="article__figure" style="margin:32px 0">
+      <a href="${src}" target="_blank" rel="noopener" aria-label="グラレコを拡大して開く">
+        <img src="${src}" alt="${CoAX.escapeHTML(figure.alt)}" loading="lazy" decoding="async"
+             style="display:block;width:100%;height:auto;border-radius:12px">
+      </a>
+      <figcaption>${CoAX.escapeHTML(figure.caption)}<br>
+        <a href="${src}" target="_blank" rel="noopener">画像を拡大して読む（別タブ）</a>
+      </figcaption>
+    </figure>`;
 }

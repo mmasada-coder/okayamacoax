@@ -190,7 +190,9 @@
   function collectColumns(){
     return [...document.querySelectorAll("#panel-columns .card")].map(card=>{
       const g=f=>card.querySelector(`[data-f="${f}"]`).value;
-      return { id:g("id"), title:g("title").trim(), date:g("date"), category:g("category").trim()||"コラム",
+      const original = state.columns.find(c => c.id === g("id"));
+      return { ...(original && original.figure ? { figure: original.figure } : {}),
+        id:g("id"), title:g("title").trim(), date:g("date"), category:g("category").trim()||"コラム",
         excerpt:g("excerpt").trim(), body:colTextToBody(g("body")) };
     });
   }
