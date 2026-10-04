@@ -3,9 +3,8 @@
 Thumbs.db
 desktop.ini
 *.tmp
-
-# Googleドキュメントのポインタ（設計書の.gdocスタブ。公開物には不要）
 *.gdoc
-
-# プロンプトの平文ソース（編集用・非公開）。公開するのは data/prompts/*.enc.json のみ
+# プロンプトの平文ソース
 prompts-source/
+# 非公開の更新入力・確認原稿。正本はDrive「おかやまCoAX」に保存。
+work/

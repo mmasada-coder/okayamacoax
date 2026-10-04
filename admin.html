@@ -67,6 +67,7 @@
       <a href="index.html" class="hint">サイトを見る →</a>
     </header>
     <div class="wrap">
+      <p><a href="tools/update-preparer.html">ChatGPTの更新パックからJSONとLINE原稿をまとめて準備する →</a></p>
       <div class="steps">
         <b>使い方</b>：各タブで編集 → 一番下の「<b>◯◯を書き出す</b>」でファイルをダウンロード →
         GitHubのリポジトリで同じ場所に<b>差し替え（アップロード）してコミット</b>すれば、1〜2分で公開反映されます。
@@ -88,6 +89,7 @@
   </div>
 
   <script src="assets/js/crypto.js"></script>
+  <script src="assets/js/content-tools.js"></script>
   <script>
   const state = { pass:"", config:null, events:[], columns:[], prompts:{} };
   const CATS = ["management","documents","sales","analysis","hr"];
@@ -221,6 +223,13 @@
       <label>タイトル</label><input type="text" data-f="title" value="${esc(e.title)}">
       <div class="row">
         <div><label>日時</label><input type="datetime-local" data-f="date" value="${esc(dt)}"></div>
+        <div style="max-width:200px"><label>状態</label>
+          <select data-f="status">
+            <option value="planned" ${!e.status||e.status==='planned'?'selected':''}>開催予定</option>
+            <option value="completed" ${e.status==='completed'?'selected':''}>開催済み</option>
+            <option value="postponed" ${e.status==='postponed'?'selected':''}>延期</option>
+            <option value="cancelled" ${e.status==='cancelled'?'selected':''}>中止</option>
+          </select></div>
         <div style="max-width:200px"><label>種別</label>
           <select data-f="type"><option ${e.type==='オンライン'?'selected':''}>オンライン</option><option ${e.type==='オフライン'?'selected':''}>オフライン</option></select></div>
       </div>
@@ -232,12 +241,14 @@
     return [...document.querySelectorAll("#panel-events .card")].map(card=>{
       const g=f=>card.querySelector(`[data-f="${f}"]`).value;
       let d=g("date"); if(d && d.length===16) d=d+":00+09:00";
-      return { id:g("id")||nextEvtId(d), title:g("title").trim(), date:d, type:g("type"), note:g("note").trim() };
+      return { id:g("id")||nextEvtId(d), title:g("title").trim(), date:d, type:g("type"), status:g("status"), note:g("note").trim() };
     });
   }
   function addEvent(){ state.events=collectEvents(); state.events.push({id:"",title:"",date:"",type:"オンライン",note:""}); renderEvents(); }
   function exportEvents(){
     const arr=collectEvents().sort((a,b)=>new Date(a.date)-new Date(b.date));
+    const errors = CoAXContent.validateData(state.columns, arr);
+    if (errors.length) { alert(errors.join("\n")); return; }
     download("events.json", JSON.stringify(arr,null,2));
   }
 

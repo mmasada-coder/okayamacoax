@@ -3,7 +3,10 @@ window.pageInit = async function () {
   const list = document.getElementById("article-list");
   let cols = [];
   try { cols = await CoAX.loadJSON("data/columns.json"); }
-  catch (e) { cols = []; }
+  catch (e) {
+    list.innerHTML = '<div class="empty" role="status"><h3>記事を読み込めませんでした</h3><p><a href="columns.html">再読み込みする</a></p></div>';
+    return;
+  }
 
   if (!cols.length) {
     list.innerHTML = `<div class="empty"><div class="empty__icon">📝</div>
