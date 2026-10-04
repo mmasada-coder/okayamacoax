@@ -16,6 +16,12 @@
       /^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):[0-5]\d:00\+09:00$/.test(v) &&
       day(v.slice(0, 10));
   }
+  function validFigure(figure) {
+    return !!figure && typeof figure === "object" && !Array.isArray(figure) &&
+      typeof figure.src === "string" &&
+      /^assets\/img\/reports\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(figure.src) &&
+      text(figure.alt) && text(figure.caption);
+  }
   function validateData(columns, events) {
     const errors = [];
     function rows(data, kind) {
@@ -34,6 +40,7 @@
           if (!/^col-\d{3,}$/.test(item.id || "")) errors.push(at + ": col-連番の id が必要です");
           if (!day(item.date)) errors.push(at + ": date は実在する YYYY-MM-DD が必要です");
           if (!["コラム", "イベントレポート"].includes(item.category)) errors.push(at + ": category が不正です");
+          if (item.figure !== undefined && !validFigure(item.figure)) errors.push(at + ": figure は公開画像パス・代替テキスト・説明が必要です");
           if (!text(item.excerpt)) errors.push(at + ": excerpt が必要です");
           // Keep existing string bodies readable; new articles use blocks.
           if (!(text(item.body) || (Array.isArray(item.body) && item.body.length &&
@@ -121,5 +128,5 @@
       "\nJSONとLINE原稿をまとめて確認後、承認された変更だけをGitHubへ反映してください。\nLINEへの投稿は運営者が行います。\n";
     return { changed, drafts, review };
   }
-  return { day, eventDate, validateData, visibleEvents, prepareBundle };
+  return { day, eventDate, validFigure, validateData, visibleEvents, prepareBundle };
 });
