@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>更新パックの準備 ｜ おかやまCoAX</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6f5;color:#1f2d2b;font:16px/1.8 system-ui,sans-serif}
+main{max-width:900px;margin:30px auto;padding:24px}section{background:#fff;padding:24px;border:1px solid #ddd;border-radius:14px;margin:20px 0}
+h1{font-size:26px}label{display:block;font-weight:bold}textarea{width:100%;min-height:260px;font:14px/1.6 monospace;padding:12px;border:1px solid #aaa;border-radius:8px}
+button,a.download{display:inline-block;border:0;border-radius:8px;background:#0a6f64;color:#fff;padding:10px 16px;font:inherit;cursor:pointer;margin:5px 8px 5px 0;text-decoration:none}
+button:disabled{opacity:.6;cursor:wait}pre{white-space:pre-wrap;overflow-wrap:anywhere}a{color:#0a6f64}#status{white-space:pre-wrap}#result[hidden]{display:none}
+:focus-visible{outline:3px solid #f0a92e;outline-offset:3px}
+</style>
+</head>
+<body><main>
+<a href="../index.html">サイトへ戻る</a>
+<h1>ChatGPTの更新パックをまとめて準備</h1>
+<p>ChatGPTが作成した更新パックを貼り付けると、サイト用JSON・LINE告知・ノート・イベント説明を一度に確認できます。</p>
+<p>GitHubの最新版と照合して、日付・重複・必須項目を検証します。公開とLINEへの投稿は、運営者が内容を承認した後に行います。</p>
+<section>
+<label for="bundle">更新パック（JSON）</label>
+<textarea id="bundle" spellcheck="false" autocomplete="off"></textarea>
+<button id="prepare" type="button">まとめて準備する</button>
+<p id="status" role="status" aria-live="polite"></p>
+</section>
+<section id="result" hidden>
+<h2>確認用原稿</h2><pre id="review"></pre>
+<h2>LINE告知</h2><pre id="announcement"></pre>
+<h2>LINEノート</h2><pre id="note"></pre>
+<h2>LINEイベント説明</h2><pre id="eventDescription"></pre>
+<h2>書き出し</h2><div id="downloads"></div>
+<p>サイト用JSONだけを承認後にGitHubの同じ場所へ反映してください。LINE原稿と確認書はDrive「おかやまCoAX」に保存してください。</p>
+</section>
+<p>貼り付けた原稿はこの画面内で処理します。GitHubへの通信は公開されている最新版の読み取りのみです。ページを閉じると入力は消えます。</p>
+</main>
+<script src="../assets/js/content-tools.js"></script>
+<script>
+"use strict";
+const repository = "mmasada-coder/okayamacoax";
+const statusEl = document.getElementById("status");
+const resultEl = document.getElementById("result");
+let urls = [];
+function clearResult() {
+  urls.forEach(URL.revokeObjectURL); urls = [];
+  document.getElementById("downloads").replaceChildren();
+  resultEl.hidden = true;
+}
+async function get(url) {
+  const r = await fetch(url, { cache: "no-store" });
+  if (!r.ok) throw new Error("GitHubから読み込めません（HTTP " + r.status + "）");
+  return r.json();
+}
+function addDownload(label, filename, content, type) {
+  const url = URL.createObjectURL(new Blob([content], { type }));
+  urls.push(url);
+  const a = document.createElement("a");
+  a.className = "download"; a.href = url; a.download = filename; a.textContent = label;
+  document.getElementById("downloads").append(a);
+}
+document.getElementById("bundle").addEventListener("input", clearResult);
+document.getElementById("prepare").addEventListener("click", async () => {
+  clearResult();
+  const button = document.getElementById("prepare");
+  button.disabled = true;
+  const input = document.getElementById("bundle");
+  const sourceText = input.value;
+  input.disabled = true;
+  statusEl.textContent = "GitHubの最新版を確認しています…";
+  try {
+    const bundle = JSON.parse(sourceText);
+    const head = await get("https://api.github.com/repos/" + repository + "/commits/main");
+    const prefix = "https://raw.githubusercontent.com/" + repository + "/" + head.sha + "/";
+    const [columns, events] = await Promise.all([get(prefix + "data/columns.json"), get(prefix + "data/events.json")]);
+    const result = CoAXContent.prepareBundle(bundle, columns, events, head.sha);
+    document.getElementById("review").textContent = result.review;
+    for (const key of ["announcement", "note", "eventDescription"]) document.getElementById(key).textContent = bundle.line[key];
+    for (const [path, content] of Object.entries(result.changed)) {
+      addDownload(path, path.split("/").pop(), content, "application/json");
+    }
+    const privateText = result.review + "\nLINE告知\n" + bundle.line.announcement +
+      "\n\nLINEノート\n" + bundle.line.note + "\n\nLINEイベント説明\n" + bundle.line.eventDescription + "\n";
+    addDownload("LINE原稿と確認書", bundle.generatedOn + "_運営_更新パック_v1.txt", privateText, "text/plain;charset=utf-8");
+    resultEl.hidden = false;
+    statusEl.textContent = "準備できました。サイトの公開・LINE投稿はまだ行っていません。";
+  } catch (e) { statusEl.textContent = "準備できませんでした。\n" + e.message; }
+  finally { button.disabled = false; input.disabled = false; }
+});
+</script>
+</body></html>

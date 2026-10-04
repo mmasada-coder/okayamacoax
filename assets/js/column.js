@@ -4,7 +4,10 @@ window.pageInit = async function (config) {
   const el = document.getElementById("article");
   let cols = [];
   try { cols = await CoAX.loadJSON("data/columns.json"); }
-  catch (e) { cols = []; }
+  catch (e) {
+    el.innerHTML = '<div class="empty" role="status"><h3>記事を読み込めませんでした</h3><p><a href="columns.html">コラム一覧へ戻る</a></p></div>';
+    return;
+  }
 
   const article = cols.find(c => c.id === id);
   if (!article) {

@@ -31,7 +31,7 @@
         <h1 class="hero__concept">共に、<span class="em">次へ</span>。</h1>
         <p class="hero__lead">「AIを実務でどう使うか」を、気負わず・気軽に試せる場所。<br>コピペで使えるプロンプト集と、リアルな活用事例をここに。</p>
         <div class="hero__actions">
-          <a href="#" id="hero-line" class="btn btn--line" target="_blank" rel="noopener">LINEで参加する（無料）</a>
+          <a href="#" id="hero-line" class="btn btn--line" target="_blank" rel="noopener">参加登録する（無料）</a>
           <a href="prompts.html" class="btn btn--ghost">プロンプト集を見る</a>
         </div>
       </div>
@@ -43,9 +43,9 @@
         <div class="section__head">
           <p class="eyebrow">SCHEDULE</p>
           <h2 class="section__title">次回の<span class="em">開催予定</span></h2>
-          <p class="section__lead">オンライン・オフラインで、実際に手を動かす会を開いています。</p>
+          <p class="section__lead">オンラインもくもく会は月1回、リアルの集まりは月1回。リアルでは実践と交流を交互に行います。日程はLINEオープンチャットでご案内します。</p>
         </div>
-        <div class="events" id="events"><div class="loading">読み込み中…</div></div>
+        <div class="events" id="events" aria-live="polite"><div class="loading">読み込み中…</div></div>
       </div>
     </section>
 
@@ -72,7 +72,7 @@
           <h2 class="section__title">最新の<span class="em">コラム</span>・イベントレポート</h2>
           <p class="section__lead">AI活用のヒントと、コミュニティの活動記録。</p>
         </div>
-        <div class="grid grid--3" id="latest-columns"><div class="loading">読み込み中…</div></div>
+        <div class="grid grid--3" id="latest-columns" aria-live="polite"><div class="loading">読み込み中…</div></div>
         <div style="text-align:center; margin-top:28px">
           <a href="columns.html" class="btn btn--ghost">記事一覧を見る</a>
         </div>
@@ -83,8 +83,8 @@
     <section class="cta-band">
       <div class="container">
         <h2>まずは、覗いてみるだけでOK。</h2>
-        <p>ニックネームでの参加も可能です。お気軽にどうぞ。</p>
-        <a href="#" id="cta-line" class="btn btn--line" target="_blank" rel="noopener">LINEオープンチャットに参加する</a>
+        <p>Googleフォームで参加登録すると、LINEオープンチャットへの参加方法をご案内します。ニックネームでの参加も可能です。</p>
+        <a href="#" id="cta-line" class="btn btn--line" target="_blank" rel="noopener">参加登録してLINEの案内を受け取る</a>
       </div>
     </section>
   </main>
@@ -92,6 +92,7 @@
   <footer id="site-footer"></footer>
 
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/content-tools.js"></script>
   <script src="assets/js/home.js"></script>
   <script>
     // ヒーロー/CTAのLINEボタンにフォームURLを反映

@@ -8,24 +8,18 @@ async function renderEvents() {
   if (!wrap) return;
   try {
     let events = await CoAX.loadJSON("data/events.json");
-    const now = Date.now();
-    const ms = e => new Date(e.date).getTime();
-    // 日付あり（未来のもの）＝日付順、日付なし/未定＝「日程調整中」として後ろに表示
-    const dated = events.filter(e => !isNaN(ms(e)) && ms(e) >= now - 12 * 3600 * 1000)
-                        .sort((a, b) => ms(a) - ms(b));
-    const undated = events.filter(e => isNaN(ms(e)));
-    events = [...dated, ...undated].slice(0, 3);
+    events = CoAXContent.visibleEvents(events);
 
     if (!events.length) {
       wrap.innerHTML = `<div class="empty" style="padding:32px"><p>次回の開催予定は準備中です。LINEオープンチャットでお知らせします。</p></div>`;
       return;
     }
     wrap.innerHTML = events.map(e => {
-      const hasDate = !isNaN(ms(e));
-      const d = new Date(e.date);
+      const hasDate = e.date !== "";
+      const d = CoAX.dateParts(e.date);
       const tagClass = e.type === "オンライン" ? "tag--online" : "tag--offline";
       const dateTile = hasDate
-        ? `<div class="event-date__day">${d.getDate()}</div><div class="event-date__ym">${d.getFullYear()}.${d.getMonth() + 1}</div>`
+        ? `<div class="event-date__day">${d.day}</div><div class="event-date__ym">${d.year}.${Number(d.month)}</div>`
         : `<div class="event-date__day" style="font-size:15px;line-height:1.25">日程<br>調整中</div>`;
       const whenText = hasDate ? CoAX.formatDate(e.date, true) : "日程調整中";
       return `
@@ -42,7 +36,7 @@ async function renderEvents() {
         </div>`;
     }).join("");
   } catch (err) {
-    wrap.innerHTML = "";
+    wrap.innerHTML = `<div class="empty" role="status"><p>開催予定を読み込めませんでした。</p><p><a href="index.html">再読み込みする</a> ／ LINEオープンチャットでもご案内しています。</p></div>`;
   }
 }
 
@@ -91,6 +85,6 @@ async function renderLatestColumns() {
         <p class="column-card__excerpt">${CoAX.escapeHTML(c.excerpt || "")}</p>
       </a>`).join("");
   } catch (err) {
-    wrap.innerHTML = "";
+    wrap.innerHTML = `<div class="empty" role="status"><p>コラムを読み込めませんでした。</p><p><a href="index.html">再読み込みする</a></p></div>`;
   }
 }

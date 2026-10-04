@@ -33,20 +33,20 @@ const CoAX = (() => {
       .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
 
+  // Render all dates in Japan time, regardless of the visitor's device timezone.
+  function dateParts(iso) {
+    const d = new Date(/^\d{4}-\d{2}-\d{2}$/.test(iso) ? iso + "T00:00:00+09:00" : iso);
+    if (isNaN(d)) return null;
+    return Object.fromEntries(new Intl.DateTimeFormat("ja-JP", {
+      timeZone: "Asia/Tokyo", year: "numeric", month: "numeric", day: "numeric",
+      weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+    }).formatToParts(d).filter(p => p.type !== "literal").map(p => [p.type, p.value]));
+  }
   function formatDate(iso, withTime = false) {
-    const d = new Date(iso);
-    if (isNaN(d)) return iso;
-    const y = d.getFullYear();
-    const m = d.getMonth() + 1;
-    const day = d.getDate();
-    const w = "日月火水木金土"[d.getDay()];
-    let s = `${y}年${m}月${day}日(${w})`;
-    if (withTime) {
-      const hh = String(d.getHours()).padStart(2, "0");
-      const mm = String(d.getMinutes()).padStart(2, "0");
-      s += ` ${hh}:${mm}`;
-    }
-    return s;
+    const d = dateParts(iso);
+    if (!d) return iso;
+    return `${d.year}年${d.month}月${d.day}日(${d.weekday})` +
+      (withTime ? ` ${d.hour}:${d.minute}` : "");
   }
 
   /* ---- カテゴリアイコン(インラインSVG) ---- */
@@ -137,7 +137,7 @@ const CoAX = (() => {
 
   document.addEventListener("DOMContentLoaded", init);
 
-  return { loadJSON, getConfig, qs, escapeHTML, formatDate, icon, COPY_SVG, CHECK_SVG };
+  return { loadJSON, getConfig, qs, escapeHTML, formatDate, dateParts, icon, COPY_SVG, CHECK_SVG };
 })();
 
 /* コピー機能(グローバル) */
